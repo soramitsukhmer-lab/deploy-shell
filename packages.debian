@@ -9,3 +9,4 @@ ca-certificates
 openssh-client
 sshpass
 xz-utils
+direnv
