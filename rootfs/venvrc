@@ -6,6 +6,7 @@ export VENV_PATH="/venv"
 if [ ! -d "${VENV_PATH}" ]; then
 	echo "INFO: Python Virtual environment not found, creating..."
 	python -m venv "${VENV_PATH}";
+	echo
 fi
 
 # Activate virtual environment
