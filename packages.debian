@@ -4,6 +4,7 @@ zplug
 lolcat
 curl
 git
+make
 ca-certificates
 openssh-client
 sshpass
