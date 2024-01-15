@@ -1,0 +1,5 @@
+#!/bin/bash
+set -eao pipefail
+source /etc/ssh/sshagentrc
+echo "ssh-agent: INFO: Starting ssh-agent service..."
+exec ssh-agent -D -a ${SSH_AUTH_SOCK} >/dev/null

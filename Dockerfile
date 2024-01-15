@@ -21,6 +21,11 @@ RUN --mount=type=bind,target=/tmp/mount \
 	curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash -s -- --unattended
 EOT
 
+# https://github.com/socheatsok78/s6-overlay-installer
+ARG S6_OVERLAY_VERSION=v3.1.6.2
+ARG S6_OVERLAY_INSTALLER=main/s6-overlay-installer-minimal.sh
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/socheatsok78/s6-overlay-installer/${S6_OVERLAY_INSTALLER})"
+
 # Install Ansible and Ansible Lint
 ARG TARGETPLATFORM=linux/amd64
 ARG ANSIBLE_VERSION
@@ -39,6 +44,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 		ansible-lint${ANSIBLE_LINT_VERSION:+==$ANSIBLE_LINT_VERSION}
 EOT
 
-ENTRYPOINT [ "/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/init-shim", "/docker-entrypoint.sh" ]
 CMD [ "/bin/zsh" ]
 WORKDIR /root
