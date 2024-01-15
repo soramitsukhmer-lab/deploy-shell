@@ -3,6 +3,7 @@ zsh
 zplug
 lolcat
 curl
+git
 ca-certificates
 openssh-client
 sshpass
