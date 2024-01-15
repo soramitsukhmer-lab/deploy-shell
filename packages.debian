@@ -1,0 +1,7 @@
+bash
+zsh
+zplug
+curl
+ca-certificates
+openssh-client
+sshpass

@@ -15,13 +15,10 @@ build:
 	docker buildx bake $(DOCKER_BAKE_FILE) $(DOCKER_BAKE_TARGETS)
 	@echo
 
-run:
-	docker run -it --rm \
-		-p 2222:22 \
-		docker.io/chocolatefrappe/ssh-proxy-server:local
+run: shell
 
 shell:
-	docker run -it --rm docker.io/chocolatefrappe/ssh-proxy-server:local bash
+	docker run -it --rm -v $(PWD):$(PWD) -w $(PWD) soramitsukhmer-lab/deploy-shell:dev
 
 .PHONY: example
 example: example/deploy

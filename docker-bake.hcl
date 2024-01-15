@@ -30,6 +30,6 @@ target "dev" {
     "template",
   ]
   tags = [
-    "ansible:local"
+    "soramitsukhmer-lab/deploy-shell:dev"
   ]
 }
