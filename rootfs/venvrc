@@ -3,16 +3,12 @@
 export PYTHONUNBUFFERED=1
 export VENV_PATH="/venv"
 
-if [ ! -d "${VENV_PATH}" ]; then python -m venv "${VENV_PATH}"; fi
+if [ ! -d "${VENV_PATH}" ]; then
+	echo "INFO: Python Virtual environment not found, creating..."
+	python -m venv "${VENV_PATH}";
+fi
 
 # Activate virtual environment
 source "${VENV_PATH}/bin/activate"
-
-# Check virtual environment
-if [ ! -f "${VENV_PATH}/bin/python" ]; then
-	echo "ERROR: Python Virtual environment not found!"
-	exit 1
-fi
-
 cat /banner.txt | /usr/games/lolcat
 echo -e "INFO: Python Virtual environment activated!\n"
