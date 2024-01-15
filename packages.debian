@@ -1,6 +1,7 @@
 bash
 zsh
 zplug
+lolcat
 curl
 ca-certificates
 openssh-client

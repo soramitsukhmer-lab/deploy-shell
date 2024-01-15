@@ -10,9 +10,9 @@ source "${VENV_PATH}/bin/activate"
 
 # Check virtual environment
 if [ ! -f "${VENV_PATH}/bin/python" ]; then
-	echo "ERROR: Virtual environment not found!"
+	echo "ERROR: Python Virtual environment not found!"
 	exit 1
 fi
 
-cat /banner.txt
-echo -e "INFO: Virtual environment activated!\n"
+cat /banner.txt | /usr/games/lolcat
+echo -e "INFO: Python Virtual environment activated!\n"
