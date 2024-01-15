@@ -18,8 +18,10 @@ RUN --mount=type=bind,target=/tmp/mount \
 	xargs -a packages.debian apt install -qy
 	rm /etc/apt/apt.conf.d/keep-cache
 	mv /tmp/docker-clean /etc/apt/apt.conf.d/docker-clean
-	curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash -s -- --unattended
 EOT
+
+# https://ohmyz.sh/
+RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash -s -- --unattended
 
 # https://github.com/socheatsok78/s6-overlay-installer
 ARG S6_OVERLAY_VERSION=v3.1.6.2
