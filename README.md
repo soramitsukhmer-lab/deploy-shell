@@ -1,2 +1,2 @@
-# docker-ansible
-A container image for Ansible
+# About
+A virtual deployment shell for DevOps for @soramitsukhmer
