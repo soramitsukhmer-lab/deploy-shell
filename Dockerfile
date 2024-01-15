@@ -25,15 +25,18 @@ ARG TARGETPLATFORM=linux/amd64
 ARG ANSIBLE_VERSION
 ARG ANSIBLE_LINT_VERSION
 RUN --mount=type=cache,target=/root/.cache/pip \
-	source /venvrc && \
+<<EOT
+	source /venvrc
+	set -euxo pipefail
 	# Add piwheels repository
-	if [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then \
-		echo "[global]" > /etc/pip.conf \
-		&& echo "extra-index-url=https://www.piwheels.org/simple" >> /etc/pip.conf; \
-	fi && \
+	if [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then
+		echo "[global]" > /etc/pip.conf
+		echo "extra-index-url=https://www.piwheels.org/simple" >> /etc/pip.conf;
+	fi
 	pip install --only-binary cryptography,ruamel.yaml.clib \
 		ansible${ANSIBLE_VERSION:+==$ANSIBLE_VERSION} \
 		ansible-lint${ANSIBLE_LINT_VERSION:+==$ANSIBLE_LINT_VERSION}
+EOT
 
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
 CMD [ "/bin/zsh" ]
