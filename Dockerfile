@@ -18,6 +18,7 @@ RUN --mount=type=bind,target=/tmp/mount \
 	xargs -a packages.debian apt install -qy
 	rm /etc/apt/apt.conf.d/keep-cache
 	mv /tmp/docker-clean /etc/apt/apt.conf.d/docker-clean
+	curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash -s -- --unattended
 EOT
 
 # Install Ansible and Ansible Lint
@@ -40,3 +41,4 @@ EOT
 
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
 CMD [ "/bin/zsh" ]
+WORKDIR /root
