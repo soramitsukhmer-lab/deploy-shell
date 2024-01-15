@@ -8,7 +8,7 @@ SHELL [ "/bin/bash", "-c" ]
 RUN --mount=type=bind,target=/tmp/mount \
 	--mount=type=cache,target=/var/cache/apt,sharing=locked \
 	--mount=type=cache,target=/var/lib/apt,sharing=locked \
-	<<EOT
+<<EOT
 	set -euxo pipefail
 	cd /tmp/mount
 	export DEBIAN_FRONTEND=noninteractive
