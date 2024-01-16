@@ -11,3 +11,4 @@ sshpass
 xz-utils
 direnv
 nano
+pipx
