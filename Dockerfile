@@ -16,6 +16,7 @@ RUN --mount=type=bind,target=/tmp/mount \
 	mv /etc/apt/apt.conf.d/docker-clean /tmp/docker-clean
 	apt update
 	xargs -a packages.debian apt install -qy
+	chsh -s $(which zsh)
 	rm /etc/apt/apt.conf.d/keep-cache
 	mv /tmp/docker-clean /etc/apt/apt.conf.d/docker-clean
 EOT
