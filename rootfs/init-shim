@@ -2,7 +2,7 @@
 set -ae
 # Customizing s6-overlay behaviour
 # https://github.com/just-containers/s6-overlay?tab=readme-ov-file#customizing-s6-overlay-behaviour
-S6_VERBOSITY=${S6_VERBOSITY:-1}
+S6_VERBOSITY=${S6_VERBOSITY:-2}
 S6_KEEP_ENV=${S6_KEEP_ENV:-1}
 S6_BEHAVIOUR_IF_STAGE2_FAILS=${S6_BEHAVIOUR_IF_STAGE2_FAILS:-2}
 S6_KILL_FINISH_MAXTIME=${S6_KILL_FINISH_MAXTIME:-5000}
