@@ -19,9 +19,6 @@ RUN --mount=type=bind,target=/tmp/src \
 	mv /tmp/docker-clean /etc/apt/apt.conf.d/docker-clean
 EOT
 
-# https://ohmyz.sh/
-RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash -s -- --unattended
-
 # https://github.com/socheatsok78/s6-overlay-installer
 ARG S6_OVERLAY_VERSION=v3.1.6.2
 ARG S6_OVERLAY_INSTALLER=main/s6-overlay-installer-minimal.sh
@@ -46,6 +43,9 @@ RUN --mount=type=bind,target=/tmp/src \
 		ansible${ANSIBLE_VERSION:+==$ANSIBLE_VERSION} \
 		ansible-lint${ANSIBLE_LINT_VERSION:+==$ANSIBLE_LINT_VERSION}
 EOT
+
+# https://ohmyz.sh/
+RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash -s -- --unattended
 
 ADD rootfs /
 ENTRYPOINT [ "/init-shim", "/docker-entrypoint.sh" ]
