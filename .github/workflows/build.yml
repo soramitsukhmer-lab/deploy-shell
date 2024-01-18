@@ -55,6 +55,9 @@ jobs:
             ./docker-bake.hcl
             ${{ steps.docker-meta.outputs.bake-file }}
             ${{ steps.github-meta.outputs.bake-file }}
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
 
       - name: Docker Metadata Summary
         uses: dockerbakery/docker-metadata-summary@v1
