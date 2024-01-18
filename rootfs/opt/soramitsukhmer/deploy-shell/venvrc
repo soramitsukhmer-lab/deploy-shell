@@ -11,5 +11,5 @@ fi
 
 # Activate virtual environment
 source "${VENV_PATH}/bin/activate"
-cat /banner.txt | /usr/games/lolcat
+cat /opt/soramitsukhmer/deploy-shell/banner.txt | /usr/games/lolcat
 echo -e "INFO: Python Virtual environment activated!\n"

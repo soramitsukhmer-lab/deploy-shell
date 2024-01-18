@@ -35,7 +35,7 @@ ARG ANSIBLE_VERSION
 ARG ANSIBLE_LINT_VERSION
 RUN --mount=type=cache,target=/root/.cache/pip \
 <<EOT
-	source /venvrc
+	source "/opt/soramitsukhmer/deploy-shell/venvrc"
 	set -euxo pipefail
 	# Add piwheels repository
 	if [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then
