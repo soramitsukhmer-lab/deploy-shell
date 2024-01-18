@@ -1,16 +1,14 @@
 ARG PYTHON_IMAGE_TAG=3.11.5-slim
 FROM python:${PYTHON_IMAGE_TAG}
-
-ADD rootfs /
 SHELL [ "/bin/bash", "-c" ]
 
 # Prerequisites
-RUN --mount=type=bind,target=/tmp/mount \
+RUN --mount=type=bind,target=/tmp/src \
 	--mount=type=cache,target=/var/cache/apt,sharing=locked \
 	--mount=type=cache,target=/var/lib/apt,sharing=locked \
 <<EOT
 	set -euxo pipefail
-	cd /tmp/mount
+	cd /tmp/src
 	export DEBIAN_FRONTEND=noninteractive
 	echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 	mv /etc/apt/apt.conf.d/docker-clean /tmp/docker-clean
@@ -33,9 +31,11 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/socheatsok78/s6-overla
 ARG TARGETPLATFORM=linux/amd64
 ARG ANSIBLE_VERSION
 ARG ANSIBLE_LINT_VERSION
-RUN --mount=type=cache,target=/root/.cache/pip \
+RUN --mount=type=bind,target=/tmp/src \
+	--mount=type=cache,target=/root/.cache/pip \
 <<EOT
-	source "/opt/soramitsukhmer/deploy-shell/venvrc"
+	cd /tmp/src
+	source "rootfs/opt/soramitsukhmer/deploy-shell/venvrc"
 	set -euxo pipefail
 	# Add piwheels repository
 	if [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then
@@ -47,6 +47,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 		ansible-lint${ANSIBLE_LINT_VERSION:+==$ANSIBLE_LINT_VERSION}
 EOT
 
+ADD rootfs /
 ENTRYPOINT [ "/init-shim", "/docker-entrypoint.sh" ]
 CMD [ "/bin/zsh" ]
 WORKDIR /root
