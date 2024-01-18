@@ -1,3 +1,3 @@
 #!/bin/bash
-source "/opt/soramitsukhmer/deploy-shell/venvrcvrc"
+source "/opt/soramitsukhmer/deploy-shell/venvrc"
 exec "$@"
