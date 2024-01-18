@@ -9,6 +9,5 @@ ca-certificates
 openssh-client
 sshpass
 xz-utils
-direnv
 nano
 pipx
