@@ -25,6 +25,9 @@ elif [ -d "$HOME/.ssh" ]; then
 	_docker_run_args+=(-v "$HOME/.ssh:/root/.ssh:ro")
 fi
 
+echo "Checking for updates..."
+docker pull ghcr.io/soramitsukhmer-lab/deploy-shell:${_deploy_shell_version}
+
 echo "Starting deploy-shell container..."
 echo " - Working directory: ${workdir}"
 echo " - Playbook: ${playbook}"
