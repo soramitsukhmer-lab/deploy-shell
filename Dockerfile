@@ -40,8 +40,8 @@ RUN --mount=type=bind,target=/tmp/src \
 		echo "extra-index-url=https://www.piwheels.org/simple" >> /etc/pip.conf;
 	fi
 	pip install --only-binary cryptography,ruamel.yaml.clib \
-		ansible${ANSIBLE_VERSION:+==$ANSIBLE_VERSION} \
-		ansible-lint${ANSIBLE_LINT_VERSION:+==$ANSIBLE_LINT_VERSION}
+		ansible${ANSIBLE_VERSION:+>=$ANSIBLE_VERSION} \
+		ansible-lint${ANSIBLE_LINT_VERSION:+>=$ANSIBLE_LINT_VERSION}
 EOT
 
 # https://ohmyz.sh/
