@@ -14,3 +14,6 @@ Or, you can specify a version:
 ```sh
 bash -c "$(curl -fsSL https://soramitsukhmer-lab.github.io/deploy-shell/run.sh)" -- v8 # or v9
 ```
+
+## License
+Licensed under the [Apache License, Version 2.0](LICENSE).
