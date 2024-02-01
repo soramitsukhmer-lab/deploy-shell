@@ -2,9 +2,9 @@
 workdir=$(pwd)
 playbook=$(basename "${workdir}")
 
-_supported_versions=("main" "v8" "v9")
-_deploy_shell_version="${1:-main}"
-_deploy_shell_image="${2:-ghcr.io/soramitsukhmer-lab/deploy-shell}"
+_supported_versions=("dev" "main" "v8" "v9")
+_deploy_shell_version="${1:-dev}"
+_deploy_shell_image="${2:-soramitsukhmer-lab/deploy-shell}"
 if [[ ! " ${_supported_versions[@]} " =~ " ${_deploy_shell_version} " ]]; then
 	echo "Unsupported deploy-shell version: ${_deploy_shell_version}"
 	echo "Supported versions: ${_supported_versions[*]}"
