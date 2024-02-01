@@ -1,5 +1,12 @@
 # About
-A virtual deployment shell for DevOps for @soramitsukhmer
+A virtual deployment shell for DevOps for @soramitsukhmer. Simplify the process of using Ansible and other tools for DevOps
+
+## Features
+
+- Python `v3.11.5`
+- Ansible `v8` and `v9`
+
+See `packages.debian` file for a list of installed packages.
 
 ## Usage
 
