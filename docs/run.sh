@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 workdir=$(pwd)
 playbook=$(basename "${workdir}")
 
@@ -25,13 +24,26 @@ elif [ -d "$HOME/.ssh" ]; then
 	_docker_run_args+=(-v "$HOME/.ssh:/root/.ssh:ro")
 fi
 
-echo "Checking for updates..."
-docker pull ghcr.io/soramitsukhmer-lab/deploy-shell:${_deploy_shell_version}
-
-echo "Starting deploy-shell container..."
-echo " - Working directory: ${workdir}"
-echo " - Playbook: ${playbook}"
+echo "Welcome to @soramitsukhmer-lab/deploy-shell!"
 echo ""
-set -x
+echo "A virtual deployment shell for DevOps for @soramitsukhmer"
+echo "Simplify the process of using Ansible and other tools for DevOps"
+echo ""
+echo "  Version: ${_deploy_shell_version}"
+echo "  Working directory: ${workdir}"
+echo ""
+
+echo "Checking for updates..."
+docker pull \
+	ghcr.io/soramitsukhmer-lab/deploy-shell:${_deploy_shell_version}
+
+echo ""
+echo "Starting deploy-shell container..."
 docker run -it --rm "${_docker_run_args[@]}" \
 	ghcr.io/soramitsukhmer-lab/deploy-shell:${_deploy_shell_version}
+
+echo ""
+echo "..............................."
+echo "You have exited the virtual deployment shell!"
+echo "Have a nice day!"
+exit 0
