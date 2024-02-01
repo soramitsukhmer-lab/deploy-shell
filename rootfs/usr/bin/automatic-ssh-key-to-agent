@@ -1,0 +1,29 @@
+#!/bin/bash
+set -eao pipefail
+SSH_KEY_DIR=~/.ssh
+source "/etc/ssh/sshagentrc"
+
+default_key_formats=(
+    id_rsa
+    id_ecdsa
+    id_ecdsa_sk
+    id_ed25519
+    id_ed25519_sk
+    id_xmss
+    id_dsa
+)
+
+if [ ! -d "${SSH_KEY_DIR}" ]; then
+    exit 0
+fi
+
+echo "Attempt to add ssh keys to ssh-agent..."
+for key_format in "${default_key_formats[@]}"; do
+    key_file="${SSH_KEY_DIR}/${key_format}"
+    if [[ -f "${key_file}" ]]; then
+        ssh-add -v "${key_file}"
+    fi
+done
+
+echo ""
+exit 0
