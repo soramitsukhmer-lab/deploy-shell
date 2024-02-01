@@ -100,5 +100,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+export PROMPT="[deploy-shell] $PROMPT"
+
 # Automatically add ssh key to ssh-agent
 automatic-ssh-key-to-agent
