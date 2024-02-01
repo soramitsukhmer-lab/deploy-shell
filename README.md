@@ -3,6 +3,9 @@
 # About
 A virtual deployment shell for DevOps for @soramitsukhmer. Simplify the process of using Ansible and other tools for DevOps
 
+[![Docker Image](https://github.com/soramitsukhmer-lab/deploy-shell/actions/workflows/build.yml/badge.svg)](https://github.com/soramitsukhmer-lab/deploy-shell/actions/workflows/build.yml)
+[![pages-build-deployment](https://github.com/soramitsukhmer-lab/deploy-shell/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/soramitsukhmer-lab/deploy-shell/actions/workflows/pages/pages-build-deployment)
+
 ## Features
 
 - Python `v3.11.5`
