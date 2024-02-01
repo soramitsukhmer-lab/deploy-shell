@@ -12,7 +12,7 @@ print:
 
 build:
 	@echo "Buiding images:"
-	docker buildx bake $(DOCKER_BAKE_FILE) $(DOCKER_BAKE_TARGETS)
+	docker buildx bake $(DOCKER_BAKE_FILE) $(DOCKER_BAKE_TARGETS) --load
 	@echo
 
 run: shell
