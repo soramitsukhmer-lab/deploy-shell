@@ -1,5 +1,5 @@
 variable "ANSIBLE_VERSION" { default = "8.4.0" }
-variable "ANSIBLE_LINT_VERSION" { default = "6.20.0" }
+variable "ANSIBLE_LINT_VERSION" { default = "6.22.2" }
 
 target "docker-metadata-action" {}
 target "github-metadata-action" {}
