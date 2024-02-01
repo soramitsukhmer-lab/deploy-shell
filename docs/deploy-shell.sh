@@ -19,7 +19,7 @@ echo ""
 set -x
 docker run -it --rm \
 		-v "ansible-${playbook}:/root/.ansible" \
-		-v "${workdir}:${workdir}" \
-		--workdir="${workdir}" \
+		-v "${workdir}:/overlayfs/${workdir}" \
+		--workdir="/overlayfs/${workdir}" \
 		"${_docker_run_args[@]}" \
 	ghcr.io/soramitsukhmer-lab/deploy-shell:main
