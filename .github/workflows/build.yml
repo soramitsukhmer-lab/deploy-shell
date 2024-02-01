@@ -49,9 +49,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
-          tags: 
+          tags: |
             type=ref,event=branch
-            type=raw,value=${{ matrix.versions }}
+            type=raw,value=v${{ matrix.versions }}
 
       - name: Generate GitHub metadata
         id: github-meta
