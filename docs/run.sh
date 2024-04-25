@@ -3,12 +3,12 @@
 DEPLOYSHELL_WORKDIR=$(pwd)
 DEPLOYSHELL_PLAYBOOK=$(basename "${DEPLOYSHELL_WORKDIR}")
 
-_SUPPORTED_VERSIONS=("main" "v8" "v9")
-_DEPLOYSHELL_VERSION="${1:-main}"
-_DEPLOYSHELL_IMAGE="${2:-ghcr.io/soramitsukhmer-lab/deploy-shell}"
-if [[ ! " ${_SUPPORTED_VERSIONS[@]} " =~ " ${_DEPLOYSHELL_VERSION} " ]]; then
-	echo "Unsupported deploy-shell version: ${_DEPLOYSHELL_VERSION}"
-	echo "Supported versions: ${_SUPPORTED_VERSIONS[*]}"
+__SUPPORTED_VERSIONS=("main" "v8" "v9")
+__DEPLOYSHELL_VERSION="${1:-main}"
+__DEPLOYSHELL_IMAGE="${2:-ghcr.io/soramitsukhmer-lab/deploy-shell}"
+if [[ ! " ${__SUPPORTED_VERSIONS[@]} " =~ " ${__DEPLOYSHELL_VERSION} " ]]; then
+	echo "Unsupported deploy-shell version: ${__DEPLOYSHELL_VERSION}"
+	echo "Supported versions: ${__SUPPORTED_VERSIONS[*]}"
 	exit 1
 fi
 
@@ -34,19 +34,19 @@ echo ""
 echo "A virtual deployment shell for DevOps for @soramitsukhmer"
 echo "Simplify the process of using Ansible and other tools for DevOps"
 echo ""
-echo "  Version: ${_DEPLOYSHELL_VERSION}"
+echo "  Version: ${__DEPLOYSHELL_VERSION}"
 echo "  Working directory: ${DEPLOYSHELL_WORKDIR}"
 echo ""
 
 echo "Checking for updates..."
-docker pull ${_DEPLOYSHELL_IMAGE}:${_DEPLOYSHELL_VERSION}
+docker pull ${__DEPLOYSHELL_IMAGE}:${__DEPLOYSHELL_VERSION}
 
 echo ""
 echo "Starting deploy-shell container..."
 if [ -f "$_DOCKER_CID_FILE" ]; then
 	docker exec -it $(cat "$_DOCKER_CID_FILE") zsh
 else
-	docker run -it --rm "${_DOCKER_RUN_ARGS[@]}" ${_DEPLOYSHELL_IMAGE}:${_DEPLOYSHELL_VERSION}
+	docker run -it --rm "${_DOCKER_RUN_ARGS[@]}" ${__DEPLOYSHELL_IMAGE}:${__DEPLOYSHELL_VERSION}
 fi
 
 echo ""
