@@ -15,9 +15,9 @@ fi
 _DOCKER_CID_FILE="$HOME/.deploy-shell.cid"
 
 _DOCKER_RUN_ARGS=(
-	--cidfile "$_DOCKER_CID_FILE"
 	-v "ansible-${DEPLOYSHELL_PLAYBOOK}:/root/.ansible"
 	-v "${DEPLOYSHELL_WORKDIR}:/overlayfs/${DEPLOYSHELL_WORKDIR}"
+	--cidfile "$_DOCKER_CID_FILE"
 	--workdir="/overlayfs/${DEPLOYSHELL_WORKDIR}"
 )
 
@@ -38,14 +38,16 @@ echo "  Version: ${__DEPLOYSHELL_VERSION}"
 echo "  Working directory: ${DEPLOYSHELL_WORKDIR}"
 echo ""
 
-echo "Checking for updates..."
-docker pull ${__DEPLOYSHELL_IMAGE}:${__DEPLOYSHELL_VERSION}
-
 echo ""
-echo "Starting deploy-shell container..."
 if [ -f "$_DOCKER_CID_FILE" ]; then
+	echo "Reusing existing session..."
 	docker exec -it $(cat "$_DOCKER_CID_FILE") zsh
+	rm "$_DOCKER_CID_FILE"
 else
+	echo "Checking for updates..."
+	docker pull ${__DEPLOYSHELL_IMAGE}:${__DEPLOYSHELL_VERSION}
+
+	echo "Starting deploy-shell container..."
 	docker run -it --rm "${_DOCKER_RUN_ARGS[@]}" ${__DEPLOYSHELL_IMAGE}:${__DEPLOYSHELL_VERSION}
 fi
 
