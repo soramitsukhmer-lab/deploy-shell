@@ -42,7 +42,6 @@ echo ""
 if [ -f "$_DOCKER_CID_FILE" ]; then
 	echo "Reusing existing session..."
 	docker exec -it $(cat "$_DOCKER_CID_FILE") zsh
-	rm "$_DOCKER_CID_FILE"
 else
 	echo "Checking for updates..."
 	docker pull ${__DEPLOYSHELL_IMAGE}:${__DEPLOYSHELL_VERSION}
@@ -50,6 +49,9 @@ else
 	echo "Starting deploy-shell container..."
 	docker run -it --rm "${_DOCKER_RUN_ARGS[@]}" ${__DEPLOYSHELL_IMAGE}:${__DEPLOYSHELL_VERSION}
 fi
+
+# Clean up
+rm "$_DOCKER_CID_FILE"
 
 echo ""
 echo "..............................."
