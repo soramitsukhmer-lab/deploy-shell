@@ -28,12 +28,13 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/socheatsok78/s6-overla
 ARG TARGETPLATFORM=linux/amd64
 ARG ANSIBLE_VERSION
 ARG ANSIBLE_LINT_VERSION
+
 RUN --mount=type=bind,target=/tmp/src \
 	--mount=type=cache,target=/root/.cache/pip \
 <<EOT
 	cd /tmp/src
-	source "rootfs/opt/soramitsukhmer/deploy-shell/venvrc"
 	set -euxo pipefail
+	python -m venv "/venv"
 	# Add piwheels repository
 	if [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then
 		echo "[global]" > /etc/pip.conf

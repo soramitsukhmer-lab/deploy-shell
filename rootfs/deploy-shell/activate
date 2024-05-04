@@ -1,0 +1,2 @@
+source "/deploy-shell/.sshagentrc"
+source "/deploy-shell/.venvrc"

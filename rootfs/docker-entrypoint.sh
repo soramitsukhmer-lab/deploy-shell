@@ -1,4 +1,3 @@
 #!/bin/bash
-source "/opt/soramitsukhmer/deploy-shell/venvrc"
-source "/etc/ssh/sshagentrc"
+source "/deploy-shell/activate"
 exec "$@"

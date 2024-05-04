@@ -1,0 +1,10 @@
+#!/bin/bash
+export PYTHONUNBUFFERED=1
+export VENV_PATH="/venv"
+
+# Print banner
+cat /deploy-shell/banner.txt | /usr/games/lolcat
+
+# Activate virtual environment
+source "${VENV_PATH}/bin/activate"
+echo -e "INFO: Python Virtual environment activated!\n"
