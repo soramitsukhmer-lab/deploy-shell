@@ -33,8 +33,9 @@ RUN --mount=type=bind,target=/tmp/src \
 	--mount=type=cache,target=/root/.cache/pip \
 <<EOT
 	cd /tmp/src
-	set -euxo pipefail
 	python -m venv "/venv"
+	source "/venv/bin/activate"
+	set -euxo pipefail
 	# Add piwheels repository
 	if [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then
 		echo "[global]" > /etc/pip.conf
