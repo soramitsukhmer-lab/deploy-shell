@@ -109,7 +109,7 @@ function main() {
 	else
 		local DOCKER_RUN_ARGS=(
 			--cidfile "${DEPLOYSHELL_CID}"
-			--workdir "/overlayfs/${DEPLOYSHELL_PWD}"
+			--workdir "/overlayfs/${DEPLOYSHELL_WORKDIR}"
 			-v "${DEPLOYSHELL_PWD}:/overlayfs/${DEPLOYSHELL_WORKDIR}"
 			-v "deploy-shell-ansible-${DEPLOYSHELL_WORKDIR}:/root/.ansible"
 		)
