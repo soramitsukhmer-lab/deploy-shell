@@ -70,7 +70,7 @@ zstyle ':omz:update' mode disabled  # disable automatic updates
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(ansible direnv git)
+plugins=(ansible direnv git ssh-agent)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -100,13 +100,6 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ll="ls -alF"
-
-# SSH Agent
-echo "==> Starting ssh-agent..."
-eval $(ssh-agent -s)
-
-# Automatically add ssh key to ssh-agent
-automatic-ssh-key-to-agent
 
 # Activate deploy-shell
 source "/deploy-shell/activate"
