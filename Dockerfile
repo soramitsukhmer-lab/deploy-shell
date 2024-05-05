@@ -47,8 +47,7 @@ RUN --mount=type=bind,target=/tmp/src \
 EOT
 
 # https://ohmyz.sh/
-RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | ZSH=/home/.oh-my-zsh bash -s -- --unattended \
-	&& chmod -R 777 /home/.oh-my-zsh
+RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | ZSH=/home/.oh-my-zsh bash -s -- --unattended
 
 ADD rootfs /
 ENTRYPOINT [ "/init-shim", "/docker-entrypoint.sh" ]

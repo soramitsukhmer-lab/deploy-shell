@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
-DEPLOYSHELL_CONTAINER_TAG="ghcr.io/soramitsukhmer-lab/deploy-shell:main"
-
 DEPLOYSHELL_ROOT="$HOME/.deploy-shell"
-DEPLOYSHELL_CID="$DEPLOYSHELL_ROOT/current"
-DEPLOYSHELL_SSH_AUTH_SOCK="$DEPLOYSHELL_ROOT/ssh-auth.sock"
-DEPLOYSHELL_PWD=$(pwd)
-DEPLOYSHELL_WORKDIR=$(basename "${DEPLOYSHELL_PWD}")
+DEPLOYSHELL_CONTAINER_TAG="ghcr.io/soramitsukhmer-lab/deploy-shell:main"
 DEPLOYSHELL_SUPPORTED_VERSIONS=("main" "v8" "v9")
 
 # helpers
@@ -77,6 +72,10 @@ function main() {
 	local INPUT_VERSION=${1:-"main"}
 	local INPUT_CONTAINER_TAG=$2
 
+	local DEPLOYSHELL_PWD=$(pwd)
+	local DEPLOYSHELL_WORKDIR=$(basename "${DEPLOYSHELL_PWD}")
+	local DEPLOYSHELL_CID="$DEPLOYSHELL_ROOT/current"
+
 	# Check input version
 	if [[ -z "${INPUT_CONTAINER_TAG}" ]]; then
 		if [[ ! " ${DEPLOYSHELL_SUPPORTED_VERSIONS[@]} " =~ " ${INPUT_VERSION} " ]]; then
@@ -107,18 +106,23 @@ function main() {
 		ohai "Connecting to existing session..."
 		execute docker exec -it $(cat "${DEPLOYSHELL_CID}") zsh
 	else
+		local DOCKER_USER_HOME="/home"
+		local DOCKER_PROJECT_HOME="/workdir"
 		local DOCKER_RUN_ARGS=(
 			--env "USER=$(whoami)"
 			--env "UID=$(id -u)"
 			--env "GID=$(id -g)"
 			--cidfile "${DEPLOYSHELL_CID}"
-			--workdir "/workdir/${DEPLOYSHELL_WORKDIR}"
-			-v "${DEPLOYSHELL_PWD}:/workdir/${DEPLOYSHELL_WORKDIR}"
-			-v "deploy-shell-ansible-${DEPLOYSHELL_WORKDIR}:/root/.ansible"
+			--workdir "$DOCKER_PROJECT_HOME/${DEPLOYSHELL_WORKDIR}"
+			-v "${DEPLOYSHELL_PWD}:$DOCKER_PROJECT_HOME/${DEPLOYSHELL_WORKDIR}"
+			-v "deploy-shell-ansible-${DEPLOYSHELL_WORKDIR}:$DOCKER_USER_HOME/.ansible"
 		)
 
 		ohai "Prepare container environment..."
-		# TBD
+		ohai "Linking user $HOME/.gitconfig..."
+		if [ -f "$HOME/.gitconfig" ]; then
+			DOCKER_RUN_ARGS+=(-v "$HOME/.gitconfig:${DOCKER_USER_HOME}/.gitconfig:ro")
+		fi
 
 		if [[ -z "$DEPLOYSHELL_SKIP_UPDATE" ]]; then
 			ohai "Check for updates..."

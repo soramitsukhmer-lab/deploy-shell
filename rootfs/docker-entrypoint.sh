@@ -1,13 +1,10 @@
 #!/bin/bash
-export HOME="/overlayuser"
+export HOME="/home"
 export ZSH_DISABLE_COMPFIX=true
 
 echo "==> Provisioning group/user ${USER} with UID ${UID} and GID ${GID}..."
 addgroup --system --verbose --gid ${GID} ${USER} || true
-adduser --verbose --system --disabled-password --uid ${UID} --shell /bin/zsh --gid ${GID} --home "$HOME" ${USER}
-
-echo "==> Linking /home/.zshrc to $HOME/.zshrc..."
-ln -sf "/home/.zshrc" "$HOME/.zshrc"
+adduser --verbose --system --disabled-password --uid ${UID} --shell /bin/zsh --gid ${GID} --no-create-home --home "$HOME" ${USER}
 
 echo "==> Setting up home directory..."
 mkdir -p "$HOME"/.ssh
