@@ -119,11 +119,13 @@ function main() {
 		)
 
 		ohai "Prepare container environment..."
-		ohai "Linking user $HOME/.gitconfig..."
+		# Linking user ~/.gitconfig
 		if [ -f "$HOME/.gitconfig" ]; then
+			ohai "Linking user $HOME/.gitconfig..."
 			DOCKER_RUN_ARGS+=(-v "$HOME/.gitconfig:${DOCKER_USER_HOME}/.gitconfig:ro")
 		fi
 
+		# Check for updates
 		if [[ -z "$DEPLOYSHELL_SKIP_UPDATE" ]]; then
 			ohai "Check for updates..."
 			execute docker pull "${DEPLOYSHELL_CONTAINER_TAG}"
