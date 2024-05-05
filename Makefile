@@ -29,5 +29,5 @@ example/deploy:
 example/teardown:
 	$(MAKE) -C example teardown
 
-test: build
+test:
 	DEPLOYSHELL_FORCE_CLEANUP=1 DEPLOYSHELL_SKIP_UPDATE=1 docs/run.sh dev soramitsukhmer-lab/deploy-shell
