@@ -112,8 +112,8 @@ function main() {
 			--env "UID=$(id -u)"
 			--env "GID=$(id -g)"
 			--cidfile "${DEPLOYSHELL_CID}"
-			--workdir "/overlayfs/${DEPLOYSHELL_WORKDIR}"
-			-v "${DEPLOYSHELL_PWD}:/overlayfs/${DEPLOYSHELL_WORKDIR}"
+			--workdir "/workdir/${DEPLOYSHELL_WORKDIR}"
+			-v "${DEPLOYSHELL_PWD}:/workdir/${DEPLOYSHELL_WORKDIR}"
 			-v "deploy-shell-ansible-${DEPLOYSHELL_WORKDIR}:/root/.ansible"
 		)
 
