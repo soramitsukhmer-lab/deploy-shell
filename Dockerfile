@@ -10,11 +10,26 @@ RUN --mount=type=bind,target=/tmp/src \
 	set -euxo pipefail
 	cd /tmp/src
 	export DEBIAN_FRONTEND=noninteractive
+	mkdir -p -m 755 /etc/apt/keyrings
+	# Enable APT caching
 	echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 	mv /etc/apt/apt.conf.d/docker-clean /tmp/docker-clean
+
+	# Install wget if not available
+	(type -p wget >/dev/null || (apt update && apt-get install wget -y))
+
+	# Configure GitHub CLI repository
+	wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
+	chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+	echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+	
+	# Install packages
 	apt update
 	xargs -a packages.debian apt install -qy
+	apt install gh -y
 	chsh -s $(which zsh)
+
+	# Reverse changes to APT caching
 	rm /etc/apt/apt.conf.d/keep-cache
 	mv /tmp/docker-clean /etc/apt/apt.conf.d/docker-clean
 EOT

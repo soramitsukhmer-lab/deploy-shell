@@ -3,6 +3,7 @@ zsh
 zplug
 lolcat
 curl
+wget
 git
 make
 ca-certificates
