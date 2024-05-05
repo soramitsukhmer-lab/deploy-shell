@@ -1,5 +1,0 @@
-#!/bin/bash
-set -eao pipefail
-source "/deploy-shell/.sshagentrc"
-echo "ssh-agent: INFO: Starting ssh-agent service..."
-ssh-agent -D -a "${SSH_AUTH_SOCK}" >/dev/null
