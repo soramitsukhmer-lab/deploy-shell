@@ -108,6 +108,9 @@ function main() {
 		execute docker exec -it $(cat "${DEPLOYSHELL_CID}") zsh
 	else
 		local DOCKER_RUN_ARGS=(
+			--env "USER=$(whoami)"
+			--env "UID=$(id -u)"
+			--env "GID=$(id -g)"
 			--cidfile "${DEPLOYSHELL_CID}"
 			--workdir "/overlayfs/${DEPLOYSHELL_WORKDIR}"
 			-v "${DEPLOYSHELL_PWD}:/overlayfs/${DEPLOYSHELL_WORKDIR}"
@@ -126,10 +129,11 @@ function main() {
 		echo "$ docker run -it --rm  ${DOCKER_RUN_ARGS[@]}"
 		echo ""
 		docker run -it --rm "${DOCKER_RUN_ARGS[@]}" "${DEPLOYSHELL_CONTAINER_TAG}"
-		if [[ $? -ne 0 ]]; then
-			error "Failed to start deploy-shell container!"
-			exit 3
-		fi
+		warn "Deploy-shell container exited! (code: $?)"
+		# if [[ $? -ne 0 ]] && [[ $? -ne 130 ]]; then
+		# 	error "Failed to start deploy-shell container!"
+		# 	exit 3
+		# fi
 	fi
 }
 
