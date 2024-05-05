@@ -119,6 +119,16 @@ function main() {
 		)
 
 		ohai "Prepare container environment..."
+
+		# Inherit GitHub credentials
+		if [ "$(command -v gh)" ]; then
+			GITHUB_AUTH_TOKEN=$(gh auth token)
+			if [[ -n "${GITHUB_AUTH_TOKEN}" ]]; then
+				ohai "Inherit GitHub credentials..."
+				DOCKER_RUN_ARGS+=(-e "GH_TOKEN=${GITHUB_AUTH_TOKEN}")
+			fi
+		fi
+		
 		# Linking user ~/.gitconfig
 		if [ -f "$HOME/.gitconfig" ]; then
 			ohai "Linking user $HOME/.gitconfig..."
@@ -132,7 +142,7 @@ function main() {
 		fi
 
 		ohai "Starting deploy-shell container..."
-		echo "$ docker run -it --rm  ${DOCKER_RUN_ARGS[@]}"
+		echo "$ docker run -it --rm ${DOCKER_RUN_ARGS[@]}"
 		echo ""
 		docker run -it --rm "${DOCKER_RUN_ARGS[@]}" "${DEPLOYSHELL_CONTAINER_TAG}"
 		warn "Deploy-shell container exited! (code: $?)"
