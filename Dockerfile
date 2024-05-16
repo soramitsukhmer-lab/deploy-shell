@@ -28,7 +28,6 @@ RUN --mount=type=bind,target=/tmp/src \
 	# Install packages
 	apt update
 	xargs -a packages.debian apt install -qy
-	apt install gh -y
 	chsh -s $(which zsh)
 
 	# Fix potential UTF-8 errors with ansible-test.
@@ -42,6 +41,7 @@ RUN --mount=type=bind,target=/tmp/src \
 	curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | ZSH=/home/.oh-my-zsh bash -s -- --unattended
 
 	# Reverse changes to APT caching
+	apt clean
 	rm /etc/apt/apt.conf.d/keep-cache
 	mv /tmp/docker-clean /etc/apt/apt.conf.d/docker-clean
 EOT
