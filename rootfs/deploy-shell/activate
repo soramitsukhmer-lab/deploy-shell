@@ -1,4 +1,2 @@
-source "/deploy-shell/.venvrc"
-
 # Print banner
 cat /deploy-shell/banner.txt | /usr/games/lolcat

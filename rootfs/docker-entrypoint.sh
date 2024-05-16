@@ -2,11 +2,13 @@
 export HOME="/home"
 export ZSH_DISABLE_COMPFIX=true
 
+USER=${USER:-"deploy-shell"}
+UID=${UID:-"1000"}
+GID=${GID:-"1000"}
+
 echo "==> Provisioning group/user ${USER} with UID ${UID} and GID ${GID}..."
 addgroup --system --verbose --gid ${GID} ${USER} || true
 adduser --verbose --system --disabled-password --uid ${UID} --shell /bin/zsh --gid ${GID} --no-create-home --home "$HOME" ${USER}
-
-echo "==> Setting up home directory..."
 mkdir -p "$HOME"/.ssh
 
 echo "==> Fixing permissions..."

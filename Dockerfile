@@ -1,5 +1,7 @@
 ARG PYTHON_IMAGE_TAG=3.11.5-slim
 FROM python:${PYTHON_IMAGE_TAG}
+
+# Change default shell to bash
 SHELL [ "/bin/bash", "-c" ]
 
 # Prerequisites
@@ -29,27 +31,27 @@ RUN --mount=type=bind,target=/tmp/src \
 	apt install gh -y
 	chsh -s $(which zsh)
 
+	# Remove Python externally managed environment
+	PYTHON_VERSION=$(python3 --version | awk '{split($2, a, "."); print a[1] "." a[2]}')
+	rm -rf /usr/lib/python${PYTHON_VERSION}/EXTERNALLY-MANAGED
+
+	# https://ohmyz.sh/
+	curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | ZSH=/home/.oh-my-zsh bash -s -- --unattended
+
 	# Reverse changes to APT caching
 	rm /etc/apt/apt.conf.d/keep-cache
 	mv /tmp/docker-clean /etc/apt/apt.conf.d/docker-clean
 EOT
 
-# https://github.com/socheatsok78/s6-overlay-installer
-ARG S6_OVERLAY_VERSION=v3.1.6.2
-ARG S6_OVERLAY_INSTALLER=main/s6-overlay-installer-minimal.sh
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/socheatsok78/s6-overlay-installer/${S6_OVERLAY_INSTALLER})"
 
 # Install Ansible and Ansible Lint
 ARG TARGETPLATFORM=linux/amd64
 ARG ANSIBLE_VERSION
 ARG ANSIBLE_LINT_VERSION
-
 RUN --mount=type=bind,target=/tmp/src \
 	--mount=type=cache,target=/root/.cache/pip \
 <<EOT
 	cd /tmp/src
-	python -m venv "/venv"
-	source "/venv/bin/activate"
 	set -euxo pipefail
 	# Add piwheels repository
 	if [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then
@@ -61,9 +63,10 @@ RUN --mount=type=bind,target=/tmp/src \
 		ansible-lint${ANSIBLE_LINT_VERSION:+>=$ANSIBLE_LINT_VERSION}
 EOT
 
-# https://ohmyz.sh/
-RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | ZSH=/home/.oh-my-zsh bash -s -- --unattended
-
+# https://github.com/socheatsok78/s6-overlay-installer
+ARG S6_OVERLAY_VERSION=v3.1.6.2
+ARG S6_OVERLAY_INSTALLER=main/s6-overlay-installer-minimal.sh
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/socheatsok78/s6-overlay-installer/${S6_OVERLAY_INSTALLER})"
 ADD rootfs /
 ENTRYPOINT [ "/init-shim", "/docker-entrypoint.sh" ]
 CMD [ "/bin/zsh" ]

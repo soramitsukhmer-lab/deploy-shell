@@ -1,7 +1,0 @@
-#!/bin/bash
-export PYTHONUNBUFFERED=1
-export VENV_PATH="/venv"
-
-# Activate virtual environment
-source "${VENV_PATH}/bin/activate"
-echo -e "INFO: Python Virtual environment activated!\n"
