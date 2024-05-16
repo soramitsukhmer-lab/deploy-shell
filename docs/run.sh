@@ -102,6 +102,16 @@ function main() {
 	local container_id_file="$project_manifest_dir/container_id"
 	local container_homedir="/home"
 	local container_workdir="/workdir"
+
+	# Check if the container is already running
+	if [ -f "$container_id_file" ]; then
+		error "A other session for $project_name is already running. Please stop the container before running the deploy-shell again."
+		error "To stop the container, run: docker stop $(cat $container_id_file)"
+		error "To connect to the running container, run: docker exec -it $(cat $container_id_file) connect"
+		exit 1
+	fi
+
+	# Prepare the container run arguments
 	local container_run_args=(
 		--cidfile "${container_id_file}"
 		--env "USER=$(whoami)"
@@ -119,14 +129,6 @@ function main() {
 			ohai "Found GitHub credentials. Passing to the container..."
 			container_run_args+=(-e "GH_TOKEN=${gh_auth_token}")
 		fi
-	fi
-
-	# Check if the container is already running
-	if [ -f "$container_id_file" ]; then
-		error "A other session for $project_name is already running. Please stop the container before running the deploy-shell again."
-		error "To stop the container, run: docker stop $(cat $container_id_file)"
-		error "To connect to the running container, run: docker exec -it $(cat $container_id_file) connect"
-		exit 1
 	fi
 
 	# Run the container
