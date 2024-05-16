@@ -31,6 +31,9 @@ RUN --mount=type=bind,target=/tmp/src \
 	apt install gh -y
 	chsh -s $(which zsh)
 
+	# Fix potential UTF-8 errors with ansible-test.
+	locale-gen en_US.UTF-8
+
 	# Remove Python externally managed environment
 	PYTHON_VERSION=$(python3 --version | awk '{split($2, a, "."); print a[1] "." a[2]}')
 	rm -rf /usr/lib/python${PYTHON_VERSION}/EXTERNALLY-MANAGED
