@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-DEPLOYSHELL_ROOT="$HOME/.deploy-shell"
-DEPLOYSHELL_CONTAINER_TAG="ghcr.io/soramitsukhmer-lab/deploy-shell:main"
-DEPLOYSHELL_SUPPORTED_VERSIONS=("main" "v8" "v9")
-
-# helpers
 # string formatters
 if [[ -t 1 ]]; then
 	tty_escape() { printf "\033[%sm" "$1"; }
@@ -57,126 +52,91 @@ execute() {
   fi
 }
 
-function print_welcome() {
-	ohai "Welcome to @soramitsukhmer-lab/deploy-shell!"
-	ohai ""
-	ohai "A virtual deployment shell for DevOps for @soramitsukhmer"
-	ohai "Simplify the process of using Ansible and other tools for DevOps"
-}
-
-function print_options() {
-	ohai ""
-}
+DEPLOYSHELL_ROOT="$HOME/.deploy-shell"
+DEPLOYSHELL_DEFAULT_IMAGE="ghcr.io/soramitsukhmer-lab/deploy-shell:main"
+DEPLOYSHELL_IMAGE_SUPPORTED_VERSIONS=("main" "v8" "v9")
 
 function main() {
-	local INPUT_VERSION=${1:-"main"}
-	local INPUT_CONTAINER_TAG=$2
+	local input_image_tag=${1:-$DEPLOYSHELL_DEFAULT_IMAGE}
 
-	local DEPLOYSHELL_PWD=$(pwd)
-	local DEPLOYSHELL_WORKDIR=$(basename "${DEPLOYSHELL_PWD}")
-	local DEPLOYSHELL_CID="$DEPLOYSHELL_ROOT/current"
+	local container_image_name=$(echo $input_image_tag | cut -d ':' -f 1)
+	local container_image_version=$(echo $input_image_tag | cut -d ':' -f 2)
+	local container_skip_update=${SKIP_UPDATE:-"false"}
 
-	# Check input version
-	if [[ -z "${INPUT_CONTAINER_TAG}" ]]; then
-		if [[ ! " ${DEPLOYSHELL_SUPPORTED_VERSIONS[@]} " =~ " ${INPUT_VERSION} " ]]; then
-			error "Unsupported version: ${INPUT_VERSION}, supported versions: ${DEPLOYSHELL_SUPPORTED_VERSIONS[*]}"
-			exit 2
+	# Check if the container_image_version is dev or develop
+	if [[ "${container_image_version}" == "dev" ]] || [[ "${container_image_version}" == "develop" ]]; then
+		if [[ -z "${SKIP_UPDATE}" ]]; then
+			container_skip_update="true"
 		fi
 	else
-		DEPLOYSHELL_CONTAINER_TAG="${INPUT_CONTAINER_TAG}:${INPUT_VERSION}"
+		if [[ ! " ${DEPLOYSHELL_IMAGE_SUPPORTED_VERSIONS[@]} " =~ " ${container_image_version} " ]]; then
+			error "The image version ${container_image_version} is not supported. Supported versions are: ${DEPLOYSHELL_IMAGE_SUPPORTED_VERSIONS[@]}"
+			exit 1
+		fi
 	fi
 
-	# Print welcome message
-	print_welcome
-	echo ""
-
-	# Do pre-cleanup if needed
-	if [[ -n "${DEPLOYSHELL_FORCE_CLEANUP}" ]]; then
-		deployshell_stop
-		deployshell_cleanup
+	# check container_skip_update
+	if [[ "${container_skip_update}" == "false" ]]; then
+		ohai "Pulling the latest image from ${container_image_name}:${container_image_version}"
+		execute docker pull ${container_image_name}:${container_image_version}
 	fi
 
-	# Check if the deploy-shell root directory exists
-	execute mkdir -p "${DEPLOYSHELL_ROOT}"
+	local project_dir="$(pwd)"
+	local project_name=$(basename $project_dir)
+	local project_manifest_dir="$DEPLOYSHELL_ROOT/$project_name"
+	local project_force_recreate=${FORCE_RECREATE:-"false"}
 
-	# Check if the deploy-shell container ID file exists
-	# If it exists, connect to the existing session
-	# Otherwise, check for updates and start a new session
-	if [ -f "${DEPLOYSHELL_CID}" ]; then
-		ohai "Connecting to existing session..."
-		execute docker exec -it $(cat "${DEPLOYSHELL_CID}") zsh
+	# Create the deploy-shell root directory
+	execute mkdir -p "$DEPLOYSHELL_ROOT"
+
+	# create deploy-shell project directory
+	if [[ "${project_force_recreate}" == "true" ]]; then
+		ohai "Re-creating the project directory: $project_manifest_dir"
+		execute rm -rf "$project_manifest_dir"
 	else
-		local DOCKER_USER_HOME="/home"
-		local DOCKER_PROJECT_HOME="/workdir"
-		local DOCKER_RUN_ARGS=(
-			--env "USER=$(whoami)"
-			--env "UID=$(id -u)"
-			--env "GID=$(id -g)"
-			--cidfile "${DEPLOYSHELL_CID}"
-			--workdir "$DOCKER_PROJECT_HOME/${DEPLOYSHELL_WORKDIR}"
-			-v "${DEPLOYSHELL_PWD}:$DOCKER_PROJECT_HOME/${DEPLOYSHELL_WORKDIR}"
-			-v "deploy-shell-ansible-${DEPLOYSHELL_WORKDIR}:$DOCKER_USER_HOME/.ansible"
-		)
-
-		ohai "Prepare container environment..."
-
-		# Inherit GitHub credentials
-		if [ "$(command -v gh)" ]; then
-			GITHUB_AUTH_TOKEN=$(gh auth token)
-			if [[ -n "${GITHUB_AUTH_TOKEN}" ]]; then
-				ohai "Inherit GitHub credentials..."
-				DOCKER_RUN_ARGS+=(-e "GH_TOKEN=${GITHUB_AUTH_TOKEN}")
-			fi
-		fi
-		
-		# Linking user ~/.gitconfig
-		if [ -f "$HOME/.gitconfig" ]; then
-			ohai "Linking user $HOME/.gitconfig..."
-			DOCKER_RUN_ARGS+=(-v "$HOME/.gitconfig:${DOCKER_USER_HOME}/.gitconfig:ro")
-		fi
-
-		# Check for updates
-		if [[ -z "$DEPLOYSHELL_SKIP_UPDATE" ]]; then
-			ohai "Check for updates..."
-			execute docker pull "${DEPLOYSHELL_CONTAINER_TAG}"
-		fi
-
-		ohai "Starting deploy-shell container..."
-		echo "$ docker run -it --rm ${DOCKER_RUN_ARGS[@]}"
-		echo ""
-		docker run -it --rm "${DOCKER_RUN_ARGS[@]}" "${DEPLOYSHELL_CONTAINER_TAG}"
-		warn "Deploy-shell container exited! (code: $?)"
-		# if [[ $? -ne 0 ]] && [[ $? -ne 130 ]]; then
-		# 	error "Failed to start deploy-shell container!"
-		# 	exit 3
-		# fi
+		ohai "Creating the project directory: $project_manifest_dir"
 	fi
-}
+	execute mkdir -p "$project_manifest_dir"
 
-function deployshell_stop() {
-	if [ -f "$DEPLOYSHELL_CID" ]; then
-		(cat "${DEPLOYSHELL_CID}" | xargs docker kill -s SIGTERM) >/dev/null
-		(cat "${DEPLOYSHELL_CID}" | xargs docker rm -f) >/dev/null
+	# Start the container
+	local container_id_file="$project_manifest_dir/container_id"
+	local container_homedir="/home"
+	local container_workdir="/workdir"
+	local container_run_args=(
+		--cidfile "${container_id_file}"
+		--env "USER=$(whoami)"
+		--env "UID=$(id -u)"
+		--env "GID=$(id -g)"
+		--workdir "${container_workdir}"
+		-v "$project_dir:${container_workdir}"
+		-v "deploy-shell-ansible-$project_name:$container_homedir/.ansible"
+	)
+
+	# Inherit GitHub credentials
+	if [ "$(command -v gh)" ]; then
+		local gh_auth_token=$(gh auth token)
+		if [[ -n "${gh_auth_token}" ]]; then
+			ohai "Found GitHub credentials. Passing to the container..."
+			container_run_args+=(-e "GH_TOKEN=${gh_auth_token}")
+		fi
 	fi
-	
-}
-function deployshell_cleanup {
-	if [ -d "$DEPLOYSHELL_ROOT" ]; then
-		rm -rf "${DEPLOYSHELL_ROOT}" >/dev/null || true
+
+	# Check if the container is already running
+	if [ -f "$container_id_file" ]; then
+		error "A other session for $project_name is already running. Please stop the container before running the deploy-shell again."
+		error "To stop the container, run: docker stop $(cat $container_id_file)"
+		error "To connect to the running container, run: docker exec -it $(cat $container_id_file) connect"
+		exit 1
 	fi
+
+	# Run the container
+	ohai "Running the virtual deployment environment using: ${container_image_name}:${container_image_version}"
+	(set -x; docker run -it --rm "${container_run_args[@]}" "${input_image_tag}")
+	warn "Deploy-shell container exited! (code: $?)"
+
+	# Clean up project
+	ohai "Cleaning up the project directory: $project_manifest_dir"
+	execute rm -rf "$project_manifest_dir"
 }
 
-function tran_EXIT() {
-	deployshell_cleanup
-	exit 0
-}
-
-function tran_SIGHUP() {
-	deployshell_stop
-	deployshell_cleanup
-	exit 0
-}
-
-trap tran_EXIT EXIT
-trap tran_SIGHUP HUP
 main "$@"
