@@ -2,9 +2,9 @@
 export HOME="/home"
 export ZSH_DISABLE_COMPFIX=true
 
-USER=${USER:-"deploy-shell"}
-UID=${UID:-"1000"}
-GID=${GID:-"1000"}
+export USER=${USER:-"deploy-shell"}
+export UID=${UID:-"1000"}
+export GID=${GID:-"1000"}
 
 echo "==> Provisioning group/user ${USER} with UID ${UID} and GID ${GID}..."
 addgroup --system --verbose --gid ${GID} ${USER} || true
