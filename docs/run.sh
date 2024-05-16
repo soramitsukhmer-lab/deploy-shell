@@ -29,6 +29,10 @@ chomp() {
 	printf "%s" "${1/"$'\n'"/}"
 }
 
+log() {
+	printf "%s\n" "$(chomp "$1")"
+}
+
 ohai() {
 	printf "${tty_blue}==>${tty_bold} %s${tty_reset}\n" "$(shell_join "$@")"
 }
@@ -75,6 +79,9 @@ function main() {
 		fi
 	fi
 
+	# Print welcome message
+	ohai "Welcome to the Virtual Deployment Shell environment!"
+
 	# check container_skip_update
 	if [[ "${container_skip_update}" == "false" ]]; then
 		ohai "Pulling the latest image from ${container_image_name}:${container_image_version}"
@@ -93,7 +100,7 @@ function main() {
 	if [[ "${project_force_recreate}" == "true" ]]; then
 		ohai "Re-creating the project directory: $project_manifest_dir"
 		execute rm -rf "$project_manifest_dir"
-	else
+	elif [[ ! -d "$project_manifest_dir" ]]; then
 		ohai "Creating the project directory: $project_manifest_dir"
 	fi
 	execute mkdir -p "$project_manifest_dir"
@@ -105,9 +112,10 @@ function main() {
 
 	# Check if the container is already running
 	if [ -f "$container_id_file" ]; then
-		error "A other session for $project_name is already running. Please stop the container before running the deploy-shell again."
-		error "To stop the container, run: docker stop $(cat $container_id_file)"
-		error "To connect to the running container, run: docker exec -it $(cat $container_id_file) connect"
+		local container_id=$(cut -c 1-8 $container_id_file)
+		warn "A other session for \"$project_name\" is already running."
+		warn "You can connect to the running container by running: docker exec -it ${container_id} connect"
+		warn "Or stop the container by running: docker stop ${container_id}"
 		exit 1
 	fi
 
@@ -134,7 +142,11 @@ function main() {
 	# Run the container
 	ohai "Running the virtual deployment environment using: ${container_image_name}:${container_image_version}"
 	(set -x; docker run -it --rm "${container_run_args[@]}" "${input_image_tag}")
-	warn "Deploy-shell container exited! (code: $?)"
+	if [ $? -eq 0 ]; then
+		ohai "Deploy-shell container exited successfully!"
+	else
+		error "Deploy-shell container exited! (code: $?)"
+	fi
 
 	# Clean up project
 	ohai "Cleaning up the project directory: $project_manifest_dir"
